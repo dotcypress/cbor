@@ -1,0 +1,26 @@
+{
+  "name": "cbor",
+  "version": "0.0.0",
+  "description": "NPM package for encoding and decoding CBOR (Concise Binary Object Representation) data.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test"
+  },
+  "repository": "https://github.com/dotCypress/cbor",
+  "keywords": [
+    "CBOR"
+  ],
+  "author": {
+    "name": "Vitaly Domnikov",
+    "email": "dotcypress@gmail.com"
+  },
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "devDependencies": {
+    "mocha": "~1.13.0",
+    "memorystream": "~0.2.0"
+  },
+  "dependencies": {
+    "lodash": "~2.4.1"
+  }
+}
