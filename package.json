@@ -21,6 +21,7 @@
     "memorystream": "~0.2.0"
   },
   "dependencies": {
-    "lodash": "~2.4.1"
+    "lodash": "~2.4.1",
+    "node-int64": "~0.3.0"
   }
 }
