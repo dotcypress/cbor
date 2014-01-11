@@ -53,35 +53,55 @@ describe('CBOR', function () {
       callEncoder(done, false, [0xf4]);
     });
 
-    describe('should process positive integers', function () {
-      it(': 0', function (done) {
-        callEncoder(done, 0, [0]);
+    describe('should process integers', function () {
+      describe('#positive', function () {
+        it('# 0', function (done) {
+          callEncoder(done, 0, [0]);
+        });
+
+        it('# 0.0', function (done) {
+          callEncoder(done, 0.0, [0]);
+        });
+
+        it('# < 24', function (done) {
+          callEncoder(done, 23, [0x17]);
+        });
+
+        it('# >= 24', function (done) {
+          callEncoder(done, 24, [0x18, 0x18]);
+        });
+
+        it('# 100', function (done) {
+          callEncoder(done, 100, [0x18, 0x64]);
+        });
+
+        it('# 1000', function (done) {
+          callEncoder(done, 1000, [0x19, 0x03, 0xe8]);
+        });
+        it('# 1000000', function (done) {
+          callEncoder(done, 1000000, [0x1a, 0x00, 0x0f, 0x42, 0x40]);
+        });
+        it('# 1000000000000', function (done) {
+          callEncoder(done, 1000000000000, [0x1b, 0x00, 0x00, 0x00, 0xe8, 0xd4, 0xa5, 0x10, 0x00]);
+        });
       });
 
-      it(': 0.0', function (done) {
-        callEncoder(done, 0.0, [0]);
-      });
-
-      it(': < 24', function (done) {
-        callEncoder(done, 23, [0x17]);
-      });
-
-      it(': >= 24', function (done) {
-        callEncoder(done, 24, [0x18, 0x18]);
-      });
-
-      it(': 100', function (done) {
-        callEncoder(done, 100, [0x18, 0x64]);
-      });
-
-      it(': 1000', function (done) {
-        callEncoder(done, 1000, [0x19, 0x03, 0xe8]);
-      });
-      it(': 1000000', function (done) {
-        callEncoder(done, 1000000, [0x1a, 0x00, 0x0f, 0x42, 0x40]);
-      });
-      it(': 1000000000000', function (done) {
-        callEncoder(done, 1000000000000, [0x1b, 0x00, 0x00, 0x00, 0xe8, 0xd4, 0xa5, 0x10, 0x00]);
+      describe('#negative', function () {
+        it('# -1', function (done) {
+          callEncoder(done, -1, [0x20]);
+        });
+        it('# -10', function (done) {
+          callEncoder(done, -10, [0x29]);
+        });
+        it('# -16', function (done) {
+          callEncoder(done, -16, [0x2f]);
+        });
+        it('# -100', function (done) {
+          callEncoder(done, -100, [0x38, 0x63]);
+        });
+        it('# -1000', function (done) {
+          callEncoder(done, -1000, [0x39, 0x03, 0xe7]);
+        });
       });
     });
   });
