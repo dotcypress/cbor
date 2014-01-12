@@ -166,6 +166,13 @@ describe('CBOR', function () {
           "b": [2, 3]
         }, [0xa2, 0x61, 0x61, 0x01, 0x61, 0x62, 0x82, 0x02, 0x03]);
       });
+
+      it('# wrong keys order', function (done) {
+        callEncoder(done, {
+          "b": [2, 3],
+          "a": 1
+        }, [0xa2, 0x61, 0x61, 0x01, 0x61, 0x62, 0x82, 0x02, 0x03]);
+      });
     });
   });
 
