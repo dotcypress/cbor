@@ -17,22 +17,22 @@ assert.arrayEqual = function (first, second) {
 describe('CBOR', function () {
 
   var callEncoder = function (done, value, expected) {
-    var stream = new MemoryStream();
     var encoder = {
       buffer: new Array(),
-      input: stream
+      input: new MemoryStream()
     };
-    stream.on('data', function (chunk) {
+    encoder.input.on('data', function (chunk) {
       encoder.buffer = encoder.buffer.concat(chunk.toByteArray());
     });
-    stream.on('end', function () {
+    encoder.input.on('end', function () {
       assert.arrayEqual(encoder.buffer, expected);
       done();
     });
-    stream.on('error', function (err) {
+    encoder.input.on('error', function (err) {
       throw err;
     });
     cbor.encode(value, encoder.input);
+    encoder.input.end();
   };
 
   describe('#encode()', function () {
