@@ -54,7 +54,7 @@ describe('CBOR', function () {
     });
 
     describe('should process integers', function () {
-      describe('#positive', function () {
+      describe('# positive', function () {
         it('# 0', function (done) {
           callEncoder(done, 0, [0]);
         });
@@ -86,7 +86,7 @@ describe('CBOR', function () {
         });
       });
 
-      describe('#negative', function () {
+      describe('# negative', function () {
         it('# -1', function (done) {
           callEncoder(done, -1, [0x20]);
         });
@@ -102,6 +102,15 @@ describe('CBOR', function () {
         it('# -1000', function (done) {
           callEncoder(done, -1000, [0x39, 0x03, 0xe7]);
         });
+      });
+    });
+
+    describe('should process byte strings', function () {
+      it('# empty', function (done) {
+        callEncoder(done, new Buffer(0), [0x40]);
+      });
+      it('# not empty', function (done) {
+        callEncoder(done, new Buffer([0x01, 0x02, 0x03, 0x04]), [0x44, 0x01, 0x02, 0x03, 0x04]);
       });
     });
   });
