@@ -174,6 +174,16 @@ describe('CBOR', function () {
         }, [0xa2, 0x61, 0x61, 0x01, 0x61, 0x62, 0x82, 0x02, 0x03]);
       });
     });
+
+    describe('should process floats', function () {
+      it('# not empty', function (done) {
+        callEncoder(done, 1.1, [0xfb, 0x3f, 0xf1, 0x99, 0x99, 0x99, 0x99, 0x99, 0x9a]);
+      });
+
+      it('# negative', function (done) {
+        callEncoder(done, -4.1, [0xfb, 0xc0, 0x10, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66]);
+      });
+    });
   });
 
   describe('#decode()', function () {
