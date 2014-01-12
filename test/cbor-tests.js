@@ -113,6 +113,22 @@ describe('CBOR', function () {
         callEncoder(done, new Buffer([0x01, 0x02, 0x03, 0x04]), [0x44, 0x01, 0x02, 0x03, 0x04]);
       });
     });
+
+    describe('should process utf strings', function () {
+      it('# empty', function (done) {
+        callEncoder(done, "", [0x60]);
+      });
+      it('# not empty', function (done) {
+        callEncoder(done, "a", [0x61, 0x61]);
+      });
+      it('# long', function (done) {
+        callEncoder(done, "IETF", [0x64, 0x49, 0x45, 0x54, 0x46]);
+      });
+
+      it('# unicode', function (done) {
+        callEncoder(done, '\u00fc', [0x62, 0xc3, 0xbc]);
+      });
+    });
   });
 
   describe('#decode()', function () {
