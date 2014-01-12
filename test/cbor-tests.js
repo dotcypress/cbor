@@ -154,6 +154,19 @@ describe('CBOR', function () {
         ], [0x83, 0x01, 0x82, 0x02, 0x03, 0x82, 0x04, 0x05]);
       });
     });
+
+    describe('should process objects', function () {
+      it('# empty', function (done) {
+        callEncoder(done, {}, [0xa0]);
+      });
+
+      it('# not empty', function (done) {
+        callEncoder(done, {
+          "a": 1,
+          "b": [2, 3]
+        }, [0xa2, 0x61, 0x61, 0x01, 0x61, 0x62, 0x82, 0x02, 0x03]);
+      });
+    });
   });
 
   describe('#decode()', function () {
