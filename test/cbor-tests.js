@@ -16,7 +16,11 @@ assert.arrayEqual = function (first, second) {
 
 describe('CBOR', function () {
 
-  var callEncoder = function (done, value, expected) {
+  var callEncoder = function (value, expected, semanticTag, done) {
+    var isSemantic = done;
+    if (!done) {
+      done = semanticTag;
+    }
     var encoder = {
       buffer: new Array(),
       input: new MemoryStream()
@@ -31,158 +35,169 @@ describe('CBOR', function () {
     encoder.input.on('error', function (err) {
       throw err;
     });
-    cbor.encode(value, encoder.input);
+    if (isSemantic) {
+      cbor.encodeSemantic(semanticTag, value, encoder.input);
+    } else {
+      cbor.encode(value, encoder.input);
+    }
     encoder.input.end();
   };
 
   describe('#encode()', function () {
 
     it('should process undefined', function (done) {
-      callEncoder(done, undefined, [0xf7]);
+      callEncoder(undefined, [0xf7], done);
     });
 
     it('should process null', function (done) {
-      callEncoder(done, null, [0xf6]);
+      callEncoder(null, [0xf6], done);
     });
 
     it('should process boolean (true)', function (done) {
-      callEncoder(done, true, [0xf5]);
+      callEncoder(true, [0xf5], done);
     });
 
     it('should process boolean (false)', function (done) {
-      callEncoder(done, false, [0xf4]);
+      callEncoder(false, [0xf4], done);
     });
 
     describe('should process integers', function () {
       describe('# positive', function () {
         it('# 0', function (done) {
-          callEncoder(done, 0, [0]);
+          callEncoder(0, [0], done);
         });
 
         it('# 0.0', function (done) {
-          callEncoder(done, 0.0, [0]);
+          callEncoder(0.0, [0], done);
         });
 
         it('# < 24', function (done) {
-          callEncoder(done, 23, [0x17]);
+          callEncoder(23, [0x17], done);
         });
 
         it('# >= 24', function (done) {
-          callEncoder(done, 24, [0x18, 0x18]);
+          callEncoder(24, [0x18, 0x18], done);
         });
 
         it('# 100', function (done) {
-          callEncoder(done, 100, [0x18, 0x64]);
+          callEncoder(100, [0x18, 0x64], done);
         });
 
         it('# 1000', function (done) {
-          callEncoder(done, 1000, [0x19, 0x03, 0xe8]);
+          callEncoder(1000, [0x19, 0x03, 0xe8], done);
         });
 
         it('# 1000000', function (done) {
-          callEncoder(done, 1000000, [0x1a, 0x00, 0x0f, 0x42, 0x40]);
+          callEncoder(1000000, [0x1a, 0x00, 0x0f, 0x42, 0x40], done);
         });
 
         it('# 1000000000000', function (done) {
-          callEncoder(done, 1000000000000, [0x1b, 0x00, 0x00, 0x00, 0xe8, 0xd4, 0xa5, 0x10, 0x00]);
+          callEncoder(1000000000000, [0x1b, 0x00, 0x00, 0x00, 0xe8, 0xd4, 0xa5, 0x10, 0x00], done);
         });
       });
 
       describe('# negative', function () {
         it('# -1', function (done) {
-          callEncoder(done, -1, [0x20]);
+          callEncoder(-1, [0x20], done);
         });
 
         it('# -10', function (done) {
-          callEncoder(done, -10, [0x29]);
+          callEncoder(-10, [0x29], done);
         });
 
         it('# -16', function (done) {
-          callEncoder(done, -16, [0x2f]);
+          callEncoder(-16, [0x2f], done);
         });
 
         it('# -100', function (done) {
-          callEncoder(done, -100, [0x38, 0x63]);
+          callEncoder(-100, [0x38, 0x63], done);
         });
 
         it('# -1000', function (done) {
-          callEncoder(done, -1000, [0x39, 0x03, 0xe7]);
+          callEncoder(-1000, [0x39, 0x03, 0xe7], done);
         });
       });
     });
 
     describe('should process byte strings', function () {
       it('# empty', function (done) {
-        callEncoder(done, new Buffer(0), [0x40]);
+        callEncoder(new Buffer(0), [0x40], done);
       });
 
       it('# not empty', function (done) {
-        callEncoder(done, new Buffer([0x01, 0x02, 0x03, 0x04]), [0x44, 0x01, 0x02, 0x03, 0x04]);
+        callEncoder(new Buffer([0x01, 0x02, 0x03, 0x04]), [0x44, 0x01, 0x02, 0x03, 0x04], done);
       });
     });
 
     describe('should process utf strings', function () {
       it('# empty', function (done) {
-        callEncoder(done, "", [0x60]);
+        callEncoder("", [0x60], done);
       });
 
       it('# not empty', function (done) {
-        callEncoder(done, "a", [0x61, 0x61]);
+        callEncoder("a", [0x61, 0x61], done);
       });
 
       it('# long', function (done) {
-        callEncoder(done, "IETF", [0x64, 0x49, 0x45, 0x54, 0x46]);
+        callEncoder("IETF", [0x64, 0x49, 0x45, 0x54, 0x46], done);
       });
 
       it('# unicode', function (done) {
-        callEncoder(done, '\u00fc', [0x62, 0xc3, 0xbc]);
+        callEncoder('\u00fc', [0x62, 0xc3, 0xbc], done);
       });
     });
 
     describe('should process arrays', function () {
       it('# empty', function (done) {
-        callEncoder(done, [], [0x80]);
+        callEncoder([], [0x80], done);
       });
 
       it('# not empty', function (done) {
-        callEncoder(done, [1, 2, 3], [0x83, 0x01, 0x02, 0x03]);
+        callEncoder([1, 2, 3], [0x83, 0x01, 0x02, 0x03], done);
       });
 
       it('# sub arrays', function (done) {
-        callEncoder(done, [1, [2, 3],
+        callEncoder([1, [2, 3],
           [4, 5]
-        ], [0x83, 0x01, 0x82, 0x02, 0x03, 0x82, 0x04, 0x05]);
+        ], [0x83, 0x01, 0x82, 0x02, 0x03, 0x82, 0x04, 0x05], done);
       });
     });
 
     describe('should process objects', function () {
       it('# empty', function (done) {
-        callEncoder(done, {}, [0xa0]);
+        callEncoder({}, [0xa0], done);
       });
 
       it('# not empty', function (done) {
-        callEncoder(done, {
+        callEncoder({
           "a": 1,
           "b": [2, 3]
-        }, [0xa2, 0x61, 0x61, 0x01, 0x61, 0x62, 0x82, 0x02, 0x03]);
+        }, [0xa2, 0x61, 0x61, 0x01, 0x61, 0x62, 0x82, 0x02, 0x03], done);
       });
 
       it('# wrong keys order', function (done) {
-        callEncoder(done, {
+        callEncoder({
           "b": [2, 3],
           "a": 1
-        }, [0xa2, 0x61, 0x61, 0x01, 0x61, 0x62, 0x82, 0x02, 0x03]);
+        }, [0xa2, 0x61, 0x61, 0x01, 0x61, 0x62, 0x82, 0x02, 0x03], done);
       });
     });
 
     describe('should process floats', function () {
       it('# not empty', function (done) {
-        callEncoder(done, 1.1, [0xfb, 0x3f, 0xf1, 0x99, 0x99, 0x99, 0x99, 0x99, 0x9a]);
+        callEncoder(1.1, [0xfb, 0x3f, 0xf1, 0x99, 0x99, 0x99, 0x99, 0x99, 0x9a], done);
       });
 
       it('# negative', function (done) {
-        callEncoder(done, -4.1, [0xfb, 0xc0, 0x10, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66]);
+        callEncoder(-4.1, [0xfb, 0xc0, 0x10, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66], done);
       });
+    });
+
+    describe('should process semantic values', function () {
+      it('# date', function (done) {
+        callEncoder("2013-03-21T20:04:00Z", [0xc0, 0x74, 0x32, 0x30, 0x31, 0x33, 0x2d, 0x30, 0x33, 0x2d, 0x32, 0x31, 0x54, 0x32, 0x30, 0x3a, 0x30, 0x34, 0x3a, 0x30, 0x30, 0x5a], 0, done);
+      });
+
     });
   });
 
