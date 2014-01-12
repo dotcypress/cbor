@@ -78,9 +78,11 @@ describe('CBOR', function () {
         it('# 1000', function (done) {
           callEncoder(done, 1000, [0x19, 0x03, 0xe8]);
         });
+
         it('# 1000000', function (done) {
           callEncoder(done, 1000000, [0x1a, 0x00, 0x0f, 0x42, 0x40]);
         });
+
         it('# 1000000000000', function (done) {
           callEncoder(done, 1000000000000, [0x1b, 0x00, 0x00, 0x00, 0xe8, 0xd4, 0xa5, 0x10, 0x00]);
         });
@@ -90,15 +92,19 @@ describe('CBOR', function () {
         it('# -1', function (done) {
           callEncoder(done, -1, [0x20]);
         });
+
         it('# -10', function (done) {
           callEncoder(done, -10, [0x29]);
         });
+
         it('# -16', function (done) {
           callEncoder(done, -16, [0x2f]);
         });
+
         it('# -100', function (done) {
           callEncoder(done, -100, [0x38, 0x63]);
         });
+
         it('# -1000', function (done) {
           callEncoder(done, -1000, [0x39, 0x03, 0xe7]);
         });
@@ -109,6 +115,7 @@ describe('CBOR', function () {
       it('# empty', function (done) {
         callEncoder(done, new Buffer(0), [0x40]);
       });
+
       it('# not empty', function (done) {
         callEncoder(done, new Buffer([0x01, 0x02, 0x03, 0x04]), [0x44, 0x01, 0x02, 0x03, 0x04]);
       });
@@ -118,15 +125,33 @@ describe('CBOR', function () {
       it('# empty', function (done) {
         callEncoder(done, "", [0x60]);
       });
+
       it('# not empty', function (done) {
         callEncoder(done, "a", [0x61, 0x61]);
       });
+
       it('# long', function (done) {
         callEncoder(done, "IETF", [0x64, 0x49, 0x45, 0x54, 0x46]);
       });
 
       it('# unicode', function (done) {
         callEncoder(done, '\u00fc', [0x62, 0xc3, 0xbc]);
+      });
+    });
+
+    describe('should process arrays', function () {
+      it('# empty', function (done) {
+        callEncoder(done, [], [0x80]);
+      });
+
+      it('# not empty', function (done) {
+        callEncoder(done, [1, 2, 3], [0x83, 0x01, 0x02, 0x03]);
+      });
+
+      it('# sub arrays', function (done) {
+        callEncoder(done, [1, [2, 3],
+          [4, 5]
+        ], [0x83, 0x01, 0x82, 0x02, 0x03, 0x82, 0x04, 0x05]);
       });
     });
   });
