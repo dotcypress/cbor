@@ -200,8 +200,4 @@ describe('CBOR', function () {
 
     });
   });
-
-  describe('#decode()', function () {
-
-  });
 });
