@@ -1,6 +1,6 @@
 {
   "name": "cbor",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "NPM package for encoding and decoding CBOR (Concise Binary Object Representation) data.",
   "main": "index.js",
   "scripts": {
